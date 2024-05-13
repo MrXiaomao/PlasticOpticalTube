@@ -1,0 +1,19 @@
+1、EnergySpectrum.txt （闪烁体中的沉积能量谱）
+    第1列        第2列      
+    能量（eV）   计数
+
+2、ReachNumber.txt  (考虑了PMT量子效率100%的探测光子数)
+    第1列        第2列       第3列
+   事件编号  PMTA探测粒子数 PMTB探测粒子数
+
+3、DetectNumber.txt (考虑了PMT量子效率的探测光子数)
+    第1列        第2列       第3列
+  事件编号 PMTA探测粒子数 PMTB探测粒子数
+
+4、opticalProduction.txt  （可见光产额，当有可见光产生时输出本次事件的可见光的产额）
+    第1列        第2列  
+  事件编号  产生的闪烁光子数目
+
+5、result.txt   （符合事件的数目）
+    第1列        第2列  
+  考虑100%量子效率的符合事件数（ReachNumber.txt）  考虑真实量子效率的符合事件数(DetectNumber.txt)

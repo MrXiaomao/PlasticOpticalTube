@@ -24,6 +24,7 @@ public:
 	virtual void BeginOfEventAction(const G4Event* event);
 	virtual void EndOfEventAction(const G4Event* event);
 
+	inline void AddScinYield(G4int count) { fopYield += count;}
     void AddDepositedEnergy(G4double Energy) { TotalEnergy += Energy;}
     
 	void AddPMTCounter(G4int VolumeID)    { reach_counter[VolumeID]++;     }
@@ -35,7 +36,8 @@ private:
     std::time_t fstart_time;
 	G4int reach_counter[2];            // 统计到达PMT A/B的光子数目
 	G4int detect_counter[2];           // 统计PMT A/B探测到的光子数目
-	G4double TotalEnergy;             // 收集一次事件中在闪烁体里面沉积的能量
+	G4double fopYield; 				   // 光产额
+	G4double TotalEnergy;              // 收集一次事件中在闪烁体里面沉积的能量
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

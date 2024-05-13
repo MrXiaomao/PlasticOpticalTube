@@ -36,13 +36,21 @@ void OpNoviceRunThread::Merge(const G4Run* run) {
 void OpNoviceRunThread::EndOfRun(){
   int size = ftotalCounts.size();
   if(size>0){
+    vector<G4double> EnDep;
+    vector<G4int> yield;
     vector<G4int> DetetCount;
+    EnDep.resize(size);
+    yield.resize(size);
     DetetCount.resize(size*2);
     int i=0;
     for ( const auto& count : ftotalCounts ) {
-      DetetCount[i++] = count.PMTA;
-      DetetCount[i++] = count.PMTB;
+      EnDep[i] = count.Edep/keV;
+      yield[i] = count.scinYield;
+      DetetCount[i*2] = count.PMTA;
+      DetetCount[i*2+1] = count.PMTB;
+      i++;
     }
+
     G4cout<<"TimeEdep size = "<<size<<G4endl;
     
     // 写入到HDF5文件中
@@ -50,8 +58,16 @@ void OpNoviceRunThread::EndOfRun(){
     // G4String outPutPath = "../OutPut/";
     write.CreateNewFile("../OutPut/DetectOptical.h5");
     write.CreateGroup("Data");
+    write.CreateDataspace(1, 1, size);
+    write.CreateDoubleDataset("EventEdep");
+    write.WriteDoubleValue(EnDep.data());
+    
+    write.CreateDataspace(1, 1, size);
+    write.CreateIntDataset("EventYield");
+    write.WriteIntValue(yield.data());
+
     write.CreateDataspace(2, 2, size);
-    write.CreateIntDataset("EventEdepTime");
+    write.CreateIntDataset("EventDetect");
     write.WriteIntValue(DetetCount.data());
     write.CloseFile();
   }

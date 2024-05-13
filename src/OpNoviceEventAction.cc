@@ -9,8 +9,8 @@
 #include <math.h>
 #include "Randomize.hh"
 
-#include "G4AutoLock.hh"  // 文件锁，防止访问文件异常
-namespace { G4Mutex detectiontex = G4MUTEX_INITIALIZER; }
+// #include "G4AutoLock.hh"  // 文件锁，防止访问文件异常
+// namespace { G4Mutex detectiontex = G4MUTEX_INITIALIZER; }
 
 #include "G4EventManager.hh"
 #include "OpNoviceRunThread.hh"
@@ -24,6 +24,7 @@ using namespace myConsts;
 OpNoviceEventAction::OpNoviceEventAction(OpNoviceRunAction* run )
 	:G4UserEventAction(),
 	 theRun(run),
+	 fopYield(0),
 	 TotalEnergy(0.)
 {
 	reach_counter[0] = 0; detect_counter[0] = 0;
@@ -42,6 +43,7 @@ OpNoviceEventAction::~OpNoviceEventAction() {
 void OpNoviceEventAction::BeginOfEventAction(const G4Event*) {
 	reach_counter[0] = 0; detect_counter[0] = 0;
 	reach_counter[1] = 0; detect_counter[1] = 0;
+	fopYield = 0;
 	TotalEnergy  = 0.0;
 }
 
@@ -66,10 +68,11 @@ void OpNoviceEventAction::EndOfEventAction(const G4Event*) {
 	  }
 	  
 //------------------------------------------------------统计沉积能量----------------------------------------------------------/
-	G4int channel = floor(TotalEnergy/(10*eV));
+	G4int channel = floor(TotalEnergy/gEnbin);
 	run->AddSpectrum(channel);
 	
 //------------------------------------------------------获取达到PMT的光子数目----------------------------------------------------------/
+   /*
    if(reach_counter[0]||reach_counter[1])  //任何一个PMT探测到光子便输出到文件中
    {
        // protect file reading via autolock
@@ -83,7 +86,7 @@ void OpNoviceEventAction::EndOfEventAction(const G4Event*) {
 	   datafile.close();
 	   filelock.unlock();
 	}
-	
+	*/
 //------------------------------------------------------------------获取PMT探测粒子数目--------------------------------------------------------------/
 //   if(detect_counter[0]||detect_counter[1])  //任何一个PMT探测到光子便输出到文件中
 //    {
@@ -92,8 +95,8 @@ void OpNoviceEventAction::EndOfEventAction(const G4Event*) {
 	    
 	if(reach_counter[0] && reach_counter[1])  	run->AddCounterReach(); //必须PMT A/B同时接受到光子才算有效事件
 	if(detect_counter[0]&&detect_counter[1])  	{
-		Detect count(detect_counter[0],detect_counter[1]);
-		G4cout<<"eventID= "<<eventID<<" "<<detect_counter[0]<<" "<<detect_counter[1]<<G4endl;
+		Detect count(TotalEnergy, fopYield, detect_counter[0],detect_counter[1]);
+		G4cout<<"eventID= "<<eventID<<" "<<TotalEnergy/keV<<" "<<fopYield<<" "<<detect_counter[0]<<" "<<detect_counter[1]<<G4endl;
 		run->AddCounterDetect(count); //必须PMT A/B同时接受到光子才算有效事件
 	}
 }

@@ -142,11 +142,16 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 //  silicone oil 的光学特性
 //
 // 硅油之后需要寻找合适的参数，现在暂时用着该参数，该参数来自于清华天格计划
+// 目前硅油的吸收长度直接用的水的参数，这个后续需要修正
 	const G4int NUMENTRIES = 11;
-	G4double Scnt_PP_GAGG[NUMENTRIES] = { hc/600.*eV, hc/590.*eV, hc/580.*eV, hc/570.*eV, hc/560.*eV, hc/550.*eV, hc/540.*eV, hc/530.*eV, hc/520.*eV,hc/510.*eV,hc/500.*eV };
+	G4double Scnt_PP_GAGG[NUMENTRIES] = {hc/540.*eV, hc/530.*eV, hc/520.*eV,hc/510.*eV,hc/495.*eV, hc/475.*eV, hc/460.*eV, hc/445.*eV, hc/430.*eV, hc/415.*eV, hc/400.*eV };
 	G4double RIndex_sil_oil[NUMENTRIES] = { 1.406, 1.406, 1.406, 1.406, 1.406, 1.406, 1.406, 1.406, 1.406, 1.406, 1.406 }; //{ 1.58, 1.58, 1.58 };//
+	G4double AbsorptionLength_oil[NUMENTRIES] = { 4.77230*m, 4.77230*m, 4.77230*m, 4.77230*m, 4.78304*m, 4.78304*m,
+		4.78304*m, 4.78304*m, 4.78304*m, 4.78304*m, 4.78304*m};
+
 	G4MaterialPropertiesTable* Scnt_MPT_silicone_oil = new G4MaterialPropertiesTable();
 	Scnt_MPT_silicone_oil->AddProperty("RINDEX", Scnt_PP_GAGG, RIndex_sil_oil, NUMENTRIES);
+	Scnt_MPT_silicone_oil->AddProperty("ABSLENGTH", Scnt_PP_GAGG, AbsorptionLength_oil, NUMENTRIES)->SetSpline(true);
 	silicone_oil_mat->SetMaterialPropertiesTable(Scnt_MPT_silicone_oil);
 
 //
@@ -192,7 +197,7 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 
 	const G4int nEntries = sizeof(photonEnergy_water)/sizeof(G4double);
 
-	G4double refractiveIndex1[] = {
+	G4double waterReIndex[] = {
 		1.3435, 1.344,  1.3445, 1.345,  1.3455,
 		1.346,  1.3465, 1.347,  1.3475, 1.348,
 		1.3485, 1.3492, 1.35,   1.3505, 1.351,
@@ -202,7 +207,7 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 		1.36,   1.3608
 	};
 
-	assert(sizeof(refractiveIndex1) == sizeof(photonEnergy_water));
+	assert(sizeof(waterReIndex) == sizeof(photonEnergy_water));
 
 	G4double absorption[] = {
 		3.448*m,  4.082*m,  6.329*m,  9.174*m, 12.346*m, 13.889*m,
@@ -214,46 +219,14 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 	};
 
 	assert(sizeof(absorption) == sizeof(photonEnergy_water));
-/*
-	G4double scintilFast[] = {
-		1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-		1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-		1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-		1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-		1.00, 1.00, 1.00, 1.00
-	};
 
-	assert(sizeof(scintilFast) == sizeof(photonEnergy_water));
-
-	G4double scintilSlow[] = {
-		0.01, 1.00, 2.00, 3.00, 4.00, 5.00, 6.00,
-		7.00, 8.00, 9.00, 8.00, 7.00, 6.00, 4.00,
-		3.00, 2.00, 1.00, 0.01, 1.00, 2.00, 3.00,
-		4.00, 5.00, 6.00, 7.00, 8.00, 9.00, 8.00,
-		7.00, 6.00, 5.00, 4.00
-	};*/
-
-	// assert(sizeof(scintilSlow) == sizeof(photonEnergy_water));
 
 	G4MaterialPropertiesTable* myMPT1 = new G4MaterialPropertiesTable();
 
-	myMPT1->AddProperty("RINDEX",       photonEnergy_water, refractiveIndex1,nEntries)
+	myMPT1->AddProperty("RINDEX",       photonEnergy_water, waterReIndex,nEntries)
 	->SetSpline(true);
 	myMPT1->AddProperty("ABSLENGTH",    photonEnergy_water, absorption,     nEntries)
 	->SetSpline(true);
-
-	/*
-	 //~ myMPT1->AddProperty("FASTCOMPONENT",photonEnergy_water, scintilFast,     nEntries)
-	       //~ ->SetSpline(true);
-	 //~ myMPT1->AddProperty("SLOWCOMPONENT",photonEnergy_water, scintilSlow,     nEntries)
-	       //~ ->SetSpline(true);
-//~ 
-	 //~ myMPT1->AddConstProperty("SCINTILLATIONYIELD",50./MeV);
-	 //~ myMPT1->AddConstProperty("RESOLUTIONSCALE",1.0);
-	 //~ myMPT1->AddConstProperty("FASTTIMECONSTANT", 1.*ns);
-	 //~ myMPT1->AddConstProperty("SLOWTIMECONSTANT",10.*ns);
-	 //~ myMPT1->AddConstProperty("YIELDRATIO",0.8);
-	*/
 	
 	G4double energy_water[] = {
 		1.56962*eV, 1.58974*eV, 1.61039*eV, 1.63157*eV,

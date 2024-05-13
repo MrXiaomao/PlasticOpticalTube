@@ -48,9 +48,9 @@ void OpNoviceRunAction::BeginOfRunAction(const G4Run*) {
 
 void OpNoviceRunAction::EndOfRunAction(const G4Run*) {
 	fTimer->Stop();
-	fRun->EndOfRun();
     
 	if (IsMaster()) {
+		fRun->EndOfRun();
 		G4cout<< G4endl<< "--------------------End of Global Run-----------------------"<<G4endl;
 		G4cout<<*fTimer<<G4endl;
 	} 

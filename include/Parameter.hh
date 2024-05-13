@@ -8,8 +8,10 @@
 namespace myConsts {
 
 struct Detect{
-    Detect():PMTA(0),PMTB(0){}
-    Detect(G4int a, G4int b):PMTA(a),PMTB(b){}
+    Detect():Edep(0.),scinYield(0),PMTA(0),PMTB(0){}
+    Detect(G4double edep, G4int yield, G4int a, G4int b):Edep(edep),scinYield(yield),PMTA(a),PMTB(b){}
+    G4double Edep; //本次事件的趁机能量
+    G4int scinYield; // 闪烁光子的产额
     G4int PMTA; //PMTA收集的粒子数
     G4int PMTB; //PMTB收集的粒子数
 };

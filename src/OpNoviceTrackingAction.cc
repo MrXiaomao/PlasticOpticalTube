@@ -47,6 +47,7 @@ void OpNoviceTrackingAction::PostUserTrackingAction(const G4Track* aTrack) {
 		if(aTrack->GetDefinition() == optical_particle) {
 			fEventAction->AddPMTCounter(0);                 // AddCounter(PMT_ID)
 		 }
+		//  G4cout<<" PMTA detect"<<G4endl;
 	 }
 	else if( nextPhyVolumeName == "physiPMTGlass2") {               // check if we hit the scoring volume
 		flag = true;
@@ -56,6 +57,7 @@ void OpNoviceTrackingAction::PostUserTrackingAction(const G4Track* aTrack) {
 		if(aTrack->GetDefinition() == optical_particle) {
 			fEventAction->AddPMTCounter(1);
 		 }
+		// G4cout<<" PMTB detect"<<G4endl;
 	 }
 	
    //------------------------------------------------------------------获取PMT探测粒子数目--------------------------------------------------------------/

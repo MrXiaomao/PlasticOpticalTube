@@ -51,17 +51,22 @@ void OpNoviceSteppingAction::UserSteppingAction(const G4Step* step)
   G4Track* fTrack = step->GetTrack();
   G4String particleName = fTrack->GetDefinition()->GetParticleName();
   
+  // 防止粒子进入死循环
+  if(fTrack->GetCurrentStepNumber()>10000){
+    fTrack->SetTrackStatus(fStopAndKill); // 杀死粒子
+  }
+
   if(particleName == "e-") 
   {
-	  G4LogicalVolume* Logicvolume = 
-	     step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
+    G4LogicalVolume* Logicvolume = 
+    step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
 	  G4String VolumeName = Logicvolume->GetName();
 	  if(VolumeName == "logicOpticaltube")
 	  {
-	      // collect energy deposited in this step
-          G4double edepStep = step->GetTotalEnergyDeposit();
-          evt_action->AddDepositedEnergy(edepStep);
-      }
+      // collect energy deposited in this step
+      G4double edepStep = step->GetTotalEnergyDeposit();
+      evt_action->AddDepositedEnergy(edepStep);
+    }
   }
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

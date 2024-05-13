@@ -7,6 +7,9 @@
 #include "G4SteppingManager.hh"
 #include "G4UnitsTable.hh"
 
+// #include "G4ParticleDefinition.hh"
+#include "G4ParticleTypes.hh"
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 OpNoviceSteppingVerbose::OpNoviceSteppingVerbose()
@@ -25,6 +28,8 @@ void OpNoviceSteppingVerbose::StepInfo()
   CopyState();
 
   G4int prec = G4cout.precision(3);
+  
+  if(fTrack->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition()) return;
 
   if( verboseLevel >= 1 ){
     if( verboseLevel >= 4 ) VerboseTrack();
@@ -35,7 +40,7 @@ void OpNoviceSteppingVerbose::StepInfo()
              << std::setw( 6) << "Y"          << "    "
              << std::setw( 6) << "Z"          << "    "
              << std::setw( 9) << "KineE"      << " "
-             << std::setw( 9) << "dEStep"     << " "
+            //  << std::setw( 9) << "dEStep"     << " "
              << std::setw(10) << "StepLeng"
              << std::setw(10) << "TrakLeng"
              << std::setw(10) << "Volume"    << "  "
@@ -47,7 +52,7 @@ void OpNoviceSteppingVerbose::StepInfo()
     << std::setw(6) << G4BestUnit(fTrack->GetPosition().y(),"Length")
     << std::setw(6) << G4BestUnit(fTrack->GetPosition().z(),"Length")
     << std::setw(6) << G4BestUnit(fTrack->GetKineticEnergy(),"Energy")
-    << std::setw(6) << G4BestUnit(fStep->GetTotalEnergyDeposit(),"Energy")
+    // << std::setw(6) << G4BestUnit(fStep->GetTotalEnergyDeposit(),"Energy")
     << std::setw(6) << G4BestUnit(fStep->GetStepLength(),"Length")
     << std::setw(6) << G4BestUnit(fTrack->GetTrackLength(),"Length")
     << "  ";
@@ -119,6 +124,8 @@ void OpNoviceSteppingVerbose::TrackingStarted()
 
   CopyState();
   G4int prec = G4cout.precision(3);
+
+  if(fTrack->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition()) return;
   if( verboseLevel > 0 ){
 
     G4cout << std::setw( 5) << "Step#"      << " "
@@ -126,7 +133,7 @@ void OpNoviceSteppingVerbose::TrackingStarted()
            << std::setw( 6) << "Y"          << "    "  
            << std::setw( 6) << "Z"          << "    "
            << std::setw( 9) << "KineE"      << " "
-           << std::setw( 9) << "dEStep"     << " "
+          //  << std::setw( 9) << "dEStep"     << " "
            << std::setw(10) << "StepLeng"
            << std::setw(10) << "TrakLeng"
            << std::setw(10) << "Volume"     << "  "
@@ -137,7 +144,7 @@ void OpNoviceSteppingVerbose::TrackingStarted()
     << std::setw( 6) << G4BestUnit(fTrack->GetPosition().y(),"Length")
     << std::setw( 6) << G4BestUnit(fTrack->GetPosition().z(),"Length")
     << std::setw( 6) << G4BestUnit(fTrack->GetKineticEnergy(),"Energy")
-    << std::setw( 6) << G4BestUnit(fStep->GetTotalEnergyDeposit(),"Energy")
+    // << std::setw( 6) << G4BestUnit(fStep->GetTotalEnergyDeposit(),"Energy")
     << std::setw( 6) << G4BestUnit(fStep->GetStepLength(),"Length")
     << std::setw( 6) << G4BestUnit(fTrack->GetTrackLength(),"Length")
     << "  ";

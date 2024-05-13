@@ -18,7 +18,12 @@ public:
 	virtual void Merge(const G4Run*);
 	void AddCounterReach() {ReachCounts++;}
 	void AddCounterDetect(Detect count) {ftotalCounts.push_back(count);}
-  void AddSpectrum(G4int ch) { MultiEnergy[ch]++;}  // 统计能量沉积，按道址统计
+	
+	// 统计能量沉积，按道址统计
+	inline void AddSpectrum(G4int ch) { 
+		if(ch<gEnChannel) MultiEnergy[ch]++;
+		else MultiEnergy[gEnChannel-1]++;
+	}
 
 	void EndOfRun();
 

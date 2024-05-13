@@ -54,18 +54,24 @@ void OpNoviceSteppingAction::UserSteppingAction(const G4Step* step)
   // 防止粒子进入死循环
   if(fTrack->GetCurrentStepNumber()>10000){
     fTrack->SetTrackStatus(fStopAndKill); // 杀死粒子
+    return;
   }
 
-  if(particleName == "e-") 
-  {
-    G4LogicalVolume* Logicvolume = 
-    step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
-	  G4String VolumeName = Logicvolume->GetName();
-	  if(VolumeName == "logicOpticaltube")
-	  {
-      // collect energy deposited in this step
-      G4double edepStep = step->GetTotalEnergyDeposit();
-      evt_action->AddDepositedEnergy(edepStep);
+  G4LogicalVolume* Logicvolume = 
+    step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
+  if(Logicvolume!=nullptr) {
+    G4String VolumeName = Logicvolume->GetName();
+    if(particleName == "e-") 
+    {
+      if(VolumeName == "logicOpticaltube")
+      {
+        // collect energy deposited in this step
+        G4double edepStep = step->GetTotalEnergyDeposit();
+        evt_action->AddDepositedEnergy(edepStep);
+      }
+    }
+    if((particleName == "opticalphoton") && (VolumeName == "logicWaterShell")){
+      evt_action->AddTrackIDThroughWater(fTrack->GetTrackID());
     }
   }
 }

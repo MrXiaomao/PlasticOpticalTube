@@ -27,8 +27,12 @@ OpNoviceEventAction::OpNoviceEventAction(OpNoviceRunAction* run )
 	 fopYield(0),
 	 TotalEnergy(0.)
 {
+	fIntoWaterOphonton.clear();
+
 	reach_counter[0] = 0; detect_counter[0] = 0;
 	reach_counter[1] = 0; detect_counter[1] = 0;
+	fDetCounterWater[0] = 0;
+	fDetCounterWater[1] = 0;
 	
     fstart_time = std::time(nullptr);//获取当前时间
 }
@@ -41,8 +45,12 @@ OpNoviceEventAction::~OpNoviceEventAction() {
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void OpNoviceEventAction::BeginOfEventAction(const G4Event*) {
+	fIntoWaterOphonton.clear();
 	reach_counter[0] = 0; detect_counter[0] = 0;
 	reach_counter[1] = 0; detect_counter[1] = 0;
+	fDetCounterWater[0] = 0;
+	fDetCounterWater[1] = 0;
+
 	fopYield = 0;
 	TotalEnergy  = 0.0;
 }
@@ -92,11 +100,15 @@ void OpNoviceEventAction::EndOfEventAction(const G4Event*) {
 //    {
 
 //    }
-	    
+
 	if(reach_counter[0] && reach_counter[1])  	run->AddCounterReach(); //必须PMT A/B同时接受到光子才算有效事件
-	if(detect_counter[0]&&detect_counter[1])  	{
-		Detect count(TotalEnergy, fopYield, detect_counter[0],detect_counter[1]);
-		G4cout<<"eventID= "<<eventID<<" "<<TotalEnergy/keV<<" "<<fopYield<<" "<<detect_counter[0]<<" "<<detect_counter[1]<<G4endl;
+	// if(detect_counter[0]&&detect_counter[1])  	
+	if(fopYield > 0){
+		Detect count(TotalEnergy, fopYield, fIntoWaterOphonton.size(), detect_counter[0], detect_counter[1], fDetCounterWater[0], fDetCounterWater[1]);
+		G4cout<<"eventID= "<<eventID<<" Edep(keV)="<<TotalEnergy/keV<<", yield="
+			<<fopYield<<", intoWaterPhoton="<<fIntoWaterOphonton.size()
+			<<", PMTA="<<detect_counter[0]<<", PMTB="<<detect_counter[1]
+			<<", PMTA_water="<<fDetCounterWater[0]<<", PMTB_water="<<fDetCounterWater[1]<<G4endl;
 		run->AddCounterDetect(count); //必须PMT A/B同时接受到光子才算有效事件
 	}
 }

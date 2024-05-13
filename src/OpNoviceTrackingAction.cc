@@ -82,13 +82,30 @@ void OpNoviceTrackingAction::PostUserTrackingAction(const G4Track* aTrack) {
      }
   }
   
-  	switch (theStatus) {
-	case Detection:	  
-        //~ G4cout<<"theStatus = Detection"<<G4endl;
-	   if(nextPhyVolumeName == "physiPMTGlass1") fEventAction->AddDetectCounter(0);      // AddDetectCounter(PMT_ID)
-	   else if(nextPhyVolumeName == "physiPMTGlass2") fEventAction->AddDetectCounter(1);
-	    break;
-     default: break;
-   }	
+	switch (theStatus) {
+		case Detection:
+			if(nextPhyVolumeName == "physiPMTGlass1") {
+				fEventAction->AddDetectCounter(0);      // AddDetectCounter(PMT_ID)
+				
+				// 查询该光子是否穿越过水体
+				G4int trackID = aTrack->GetTrackID();
+				std::map<G4int,G4bool>::iterator it = fEventAction->fIntoWaterOphonton.find(trackID);
+				if ( it != fEventAction->fIntoWaterOphonton.end()) {
+					fEventAction->AddDetectWaterCounter(0);
+				}
+			}
+			else if(nextPhyVolumeName == "physiPMTGlass2") {
+				fEventAction->AddDetectCounter(1);
+
+				// 查询该光子是否穿越过水体
+				G4int trackID = aTrack->GetTrackID();
+				std::map<G4int,G4bool>::iterator it = fEventAction->fIntoWaterOphonton.find(trackID);
+				if ( it != fEventAction->fIntoWaterOphonton.end()) {
+					fEventAction->AddDetectWaterCounter(1);
+				}
+			}
+			break;
+		default: break;
+   }
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

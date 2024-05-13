@@ -73,10 +73,10 @@ void OpNoviceActionInitialization::Build() const {
       
 	  OpNoviceEventAction* EvAct =new OpNoviceEventAction(RunAct);
 	  SetUserAction( EvAct );
-	  //~ 
-      SetUserAction(new OpNoviceStackingAction(EvAct));              // 获取总的发光粒子数
+	  
+    SetUserAction(new OpNoviceStackingAction(EvAct));              // 获取总的发光粒子数
       
-      SetUserAction(new OpNoviceTrackingAction(EvAct));     // 获取到达PMT的光子数 被PMT探测的粒子数
+    SetUserAction(new OpNoviceTrackingAction(EvAct));     // 获取到达PMT的光子数 被PMT探测的粒子数
       
 	  SetUserAction(new OpNoviceSteppingAction( EvAct ));  // 获取能量沉积
 	  

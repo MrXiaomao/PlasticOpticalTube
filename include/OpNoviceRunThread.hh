@@ -18,6 +18,7 @@ public:
 	virtual void Merge(const G4Run*);
 	void AddCounterReach() {ReachCounts++;}
 	void AddCounterDetect(Detect count) {ftotalCounts.push_back(count);}
+	void AddPhotonGroup(PhotonGroup count) {fopticalPhoton.push_back(count);}
 	
 	// 统计能量沉积，按道址统计
 	inline void AddSpectrum(G4int ch) { 
@@ -30,6 +31,7 @@ public:
 private:
 	G4int ReachCounts;
 	vector<Detect> ftotalCounts;
+	vector<PhotonGroup> fopticalPhoton;
 	G4int MultiEnergy[gEnChannel];  // 每个道址的能量为10eV
 };
 

@@ -31,6 +31,7 @@ void OpNoviceRunThread::Merge(const G4Run* run) {
   
   //合并容器
   ftotalCounts.insert(ftotalCounts.end(), localRun->ftotalCounts.begin(), localRun->ftotalCounts.end());
+  // fopticalPhoton.insert(fopticalPhoton.end(), localRun->fopticalPhoton.begin(), localRun->fopticalPhoton.end());
 
 	G4Run::Merge(run);
 }
@@ -70,42 +71,64 @@ void OpNoviceRunThread::EndOfRun(){
     G4cout << wholepath <<" is deleted successfully." << G4endl;
   }
 
+  // 写入到HDF5文件中
+  Hdf5WriteValue write;
+  write.CreateNewFile(wholepath);
+
   //切割数据
   int size = ftotalCounts.size();
+  int validCounter = 0;
   if(size>0){
+    // 记录有效事件中的物理量
     vector<G4double> EnDep;
-    vector<G4int> yield;
-    vector<G4int> DetetCount;
-    EnDep.resize(size);
-    yield.resize(size);
-    DetetCount.resize(size*2);
-    int i=0;
+    vector<G4int> yield_DetetCount;
+
+    //记录光产额以及穿越水体的光子。
+    vector<G4int> PhotonNum;
+    vector<G4double> ratio;
+
     for ( const auto& count : ftotalCounts ) {
-      EnDep[i] = count.Edep/keV;
-      yield[i] = count.scinYield;
-      DetetCount[i*2] = count.PMTA;
-      DetetCount[i*2+1] = count.PMTB;
-      i++;
+      if(count.PMTA>0 && count.PMTB>0) {
+        validCounter++;
+        EnDep.push_back(count.Edep/keV);
+        yield_DetetCount.push_back(count.scinYield);
+        yield_DetetCount.push_back(count.IntoWater);
+        yield_DetetCount.push_back(count.PMTA);
+        yield_DetetCount.push_back(count.PMTB);
+        yield_DetetCount.push_back(count.PMTA_water);
+        yield_DetetCount.push_back(count.PMTB_water);
+      }
+      PhotonNum.push_back(count.scinYield);
+      PhotonNum.push_back(count.IntoWater);
+      ratio.push_back(count.IntoWater*1.0/count.scinYield);
     }
 
-    G4cout<<"Counter size = "<<size<<G4endl;
+    if(validCounter>0){
+      G4cout<<"Detect Counter size = "<<size<<G4endl;
 
-    // 写入到HDF5文件中
-    Hdf5WriteValue write;
-    write.CreateNewFile(wholepath);
-    // write.CreateNewFile("../OutPut/DetectOptical.h5");
-    write.CreateGroup("Data");
-    write.CreateDataspace(1, 1, size);
-    write.CreateDoubleDataset("EventEdep");
-    write.WriteDoubleValue(EnDep.data());
-    
-    write.CreateDataspace(1, 1, size);
-    write.CreateIntDataset("EventYield");
-    write.WriteIntValue(yield.data());
+      write.CreateGroup("Data1");
+      write.CreateDataspace(1, 1, validCounter);
+      write.CreateDoubleDataset("EventEdep");
+      write.WriteDoubleValue(EnDep.data());
 
+      write.CreateDataspace(2, 6, validCounter);
+      write.CreateIntDataset("EventDetect");
+      write.WriteIntValue(yield_DetetCount.data());
+      //清空容器,及时释放系统内存
+      vector<G4double>().swap(EnDep);
+      vector<G4int>().swap(yield_DetetCount);
+    }
+    write.CreateGroup("Data2");
     write.CreateDataspace(2, 2, size);
-    write.CreateIntDataset("EventDetect");
-    write.WriteIntValue(DetetCount.data());
-    write.CloseFile();
+    write.CreateIntDataset("Yield_water");
+    write.WriteIntValue(PhotonNum.data());
+    
+    write.CreateDataspace(1, 1, validCounter);
+    write.CreateDoubleDataset("ratio");
+    write.WriteDoubleValue(ratio.data());
+    //清空容器,及时释放系统内存
+    vector<G4double>().swap(ratio);
+    vector<G4int>().swap(PhotonNum);
   }
+  write.CloseFile();
 }

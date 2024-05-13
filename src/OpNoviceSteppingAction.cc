@@ -1,5 +1,4 @@
-// $Id: OpNoviceSteppingAction.cc 71007 2013-06-09 16:14:59Z maire $
-//
+
 /// \file OpNoviceSteppingAction.cc
 /// \brief Implementation of the OpNoviceSteppingAction class
 

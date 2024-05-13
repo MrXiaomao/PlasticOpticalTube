@@ -3,6 +3,12 @@
 #define OpNoviceRunThread_h 1
 
 #include "G4Run.hh"
+#include <vector>
+// #include <map>
+#include <stdio.h>
+#include "Parameter.hh"
+using namespace myConsts;
+using namespace std;
 
 class OpNoviceRunThread : public G4Run {
 public:
@@ -11,22 +17,15 @@ public:
 
 	virtual void Merge(const G4Run*);
 	void AddCounterReach() {ReachCounts++;}
-	void AddCounterDetect() {DetectCounts++;}
-    void AddSpectrum(G4int ch) { Energy[ch]++;}   // 统计能量沉积，按道址统计
-    
-	G4int GetReachCounts() const { return ReachCounts;	}
-	G4int GetDetectCounts() const { return DetectCounts;	}
-	
-    G4int GetSpectrum(int ch)  const
-    { 
-		if(ch<2000) return Energy[ch];   // 防止指针越界
-		else return 0;
-	}
-	
+	void AddCounterDetect(Detect count) {ftotalCounts.push_back(count);}
+  void AddSpectrum(G4int ch) { MultiEnergy[ch]++;}  // 统计能量沉积，按道址统计
+
+	void EndOfRun();
+
 private:
 	G4int ReachCounts;
-	G4int DetectCounts;
-	G4int Energy[2000];  // 每个道址的能量为10eV
+	vector<Detect> ftotalCounts;
+	G4int MultiEnergy[gEnChannel];  // 每个道址的能量为10eV
 };
 
 /// End of file

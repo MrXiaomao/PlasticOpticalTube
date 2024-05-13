@@ -16,11 +16,8 @@ namespace { G4Mutex detectiontex = G4MUTEX_INITIALIZER; }
 #include "OpNoviceRunThread.hh"
 #include "OpNoviceEventAction.hh"
 
-#include <fstream>
-#include "globals.hh"
-#include <stdio.h>
-#include "G4ios.hh"
-using namespace std; //用于输出文件
+#include "Parameter.hh"
+using namespace myConsts;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -31,11 +28,14 @@ OpNoviceEventAction::OpNoviceEventAction(OpNoviceRunAction* run )
 {
 	reach_counter[0] = 0; detect_counter[0] = 0;
 	reach_counter[1] = 0; detect_counter[1] = 0;
+	
+    fstart_time = std::time(nullptr);//获取当前时间
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-OpNoviceEventAction::~OpNoviceEventAction() { }
+OpNoviceEventAction::~OpNoviceEventAction() { 
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -55,10 +55,14 @@ void OpNoviceEventAction::EndOfEventAction(const G4Event*) {
 //------------------------------------------------------输出进度条----------------------------------------------------------/
       const G4Event* currentEvent = G4EventManager::GetEventManager()->GetConstCurrentEvent();
       G4int eventID = currentEvent->GetEventID();
-      if(eventID%10 == 0) 
+      if(eventID%30 == 0) 
       {
+		// std::tm *ptm = std::localtime(&fstart_time);//转化为本地时间
+		std::time_t nowTime = std::time(nullptr); //将本地时间转换回time_t表示的时间
+    	//计算时间差（seconds）
+		G4int time_diff = nowTime - fstart_time;
 		  G4int NumberEvent = run->GetNumberOfEventToBeProcessed();
-		  G4cout<<"............................."<<eventID*1.0/NumberEvent*100<<"%........................"<<G4endl; 
+		  G4cout<<"............."<<eventID*1.0/NumberEvent*100<<"%, running time:"<<time_diff<<" seconds,............."<<G4endl; 
 	  }
 	  
 //------------------------------------------------------统计沉积能量----------------------------------------------------------/
@@ -81,22 +85,17 @@ void OpNoviceEventAction::EndOfEventAction(const G4Event*) {
 	}
 	
 //------------------------------------------------------------------获取PMT探测粒子数目--------------------------------------------------------------/
-  if(detect_counter[0]||detect_counter[1])  //任何一个PMT探测到光子便输出到文件中
-   {
-       // protect file reading via autolock
-       G4AutoLock filelock(&detectiontex);
-       filelock.lock();
-         
-      // 输出总发光数到文件
-      fstream datafile("DetectNumber.txt", ios::out|ios::app);   // 追加
-      G4bool signal = datafile.is_open();
-      if(signal) datafile<<eventID<<" "<<detect_counter[0]<<" "<<detect_counter[1]<<endl;
-	  datafile.close();
-	  filelock.unlock();
-   }
+//   if(detect_counter[0]||detect_counter[1])  //任何一个PMT探测到光子便输出到文件中
+//    {
+
+//    }
 	    
 	if(reach_counter[0] && reach_counter[1])  	run->AddCounterReach(); //必须PMT A/B同时接受到光子才算有效事件
-	if(detect_counter[0]&&detect_counter[1])  	run->AddCounterDetect(); //必须PMT A/B同时接受到光子才算有效事件
+	if(detect_counter[0]&&detect_counter[1])  	{
+		Detect count(detect_counter[0],detect_counter[1]);
+		G4cout<<"eventID= "<<eventID<<" "<<detect_counter[0]<<" "<<detect_counter[1]<<G4endl;
+		run->AddCounterDetect(count); //必须PMT A/B同时接受到光子才算有效事件
+	}
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

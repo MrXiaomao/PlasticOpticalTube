@@ -26,7 +26,7 @@ OpNoviceTrackingAction::OpNoviceTrackingAction(OpNoviceEventAction *evt)
 {}
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void OpNoviceTrackingAction::PreUserTrackingAction(const G4Track* aTrack) {
+void OpNoviceTrackingAction::PreUserTrackingAction(const G4Track* ) {
 	flag = false;
  }
 

@@ -11,6 +11,7 @@
 
 #include "OpNoviceRunAction.hh"
 #include "G4SystemOfUnits.hh"
+#include <ctime>
 
 /// Event action class
 ///
@@ -31,6 +32,7 @@ public:
 	OpNoviceRunAction* theRun;
 
 private:
+    std::time_t fstart_time;
 	G4int reach_counter[2];            // 统计到达PMT A/B的光子数目
 	G4int detect_counter[2];           // 统计PMT A/B探测到的光子数目
 	G4double TotalEnergy;             // 收集一次事件中在闪烁体里面沉积的能量

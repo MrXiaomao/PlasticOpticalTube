@@ -23,11 +23,11 @@
 /vis/geometry/set/visibility logicWorld 0 false
 /vis/geometry/set/visibility logicPMTGlass 0 false
 /vis/geometry/set/visibility logicWater 0 false
-/vis/geometry/set/visibility silicon_oil_log 0 false
+/vis/geometry/set/visibility si_oil_log 0 false
 
 #/vis/geometry/set/colour logicWater 0 0.8 1.0 1.0 0.1
 /vis/geometry/set/colour logicOpticaltube 0 0.7 0.3 0.1 0.7 
-/vis/geometry/set/colour logicOpticalshell 0 0.1 0.3 0.9 0.3 
+#/vis/geometry/set/colour logicOpticalshell 0 0.1 0.3 0.9 0.3 
 #/vis/geometry/set/colour logicPMTGlass 0 0.5 0.3 0.5 0.1 
 /vis/geometry/set/colour logicWaterShell 0 1.0 1.0 1.0 0.2 
 

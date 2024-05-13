@@ -140,10 +140,6 @@ int main(int argc,char** argv)
   // User action initialization
   runManager->SetUserInitialization(new OpNoviceActionInitialization());
 
-  // Initialize G4 kernel
-  //
-  runManager->Initialize();
-
 #ifdef G4VIS_USE
   // Initialize visualization
   //
@@ -157,7 +153,7 @@ int main(int argc,char** argv)
   //
   G4UImanager* UImanager = G4UImanager::GetUIpointer(); 
    
-  if ( macro.size() ) {
+  if ( argc!=1 ) {
      // Batch mode
      G4String command = "/control/execute ";
      UImanager->ApplyCommand(command+macro);

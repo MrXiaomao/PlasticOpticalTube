@@ -53,8 +53,8 @@ class OpNovicePrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
   public:
     virtual void GeneratePrimaries(G4Event*);
 
-    void SetOptPhotonPolar();
-    void SetOptPhotonPolar(G4double);
+    // void SetOptPhotonPolar();
+    // void SetOptPhotonPolar(G4double);
     void GetEnergySpectrum(const char *filename);
     G4int CountLines(const char *filename);
 
@@ -74,9 +74,9 @@ class OpNovicePrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     G4double opticalDistance;        // 相邻两个光纤之间的间距
     static const int EnergyNum = 100;
     G4double EnergySpectrum[EnergyNum][2];  // 最大可容纳100个能量点，如更多，请进一步改动，但请注意
-    static const G4int c_colums = 17;   
-    static  G4int columNum[17];     // 存放每一列中对应的光纤数目，从左往右数起
-    G4int columDistribution[17]; // 对colum[]数组累积求和，相当于分布函数，方便快速定位列号。
+    static const G4int c_colums = 19;   
+    static  G4int columNum[19];     // 存放每一列中对应的光纤数目，从左往右数起
+    G4int columDistribution[19]; // 对colum[]数组累积求和，相当于分布函数，方便快速定位列号。
     G4int   SumFiber;            // 总光纤根数
 };
 

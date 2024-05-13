@@ -1,5 +1,5 @@
-#/run/numberOfThreads 60
-#/run/initialize
+/run/numberOfThreads 12
+/run/initialize
 
 /control/verbose 0
 /tracking/verbose 0

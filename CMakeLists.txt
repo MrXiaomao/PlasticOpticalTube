@@ -1,6 +1,6 @@
 #----------------------------------------------------------------------------
 # Setup the project
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 project(OpNovice)
 
 #----------------------------------------------------------------------------
@@ -14,6 +14,11 @@ if(WITH_GEANT4_UIVIS)
 else()
   find_package(Geant4 REQUIRED)
 endif()
+
+#-----------------------HDF5------------
+find_package(HDF5 REQUIRED COMPONENTS C CXX)
+set(HDF5_INCLUDE_DIRS /usr/local/hdf5/include)
+include_directories(${HDF5_INCLUDE_DIRS})
 
 #----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions
@@ -32,7 +37,7 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 # Add the executable, and link it to the Geant4 libraries
 #
 add_executable(OpNovice OpNovice.cc ${sources} ${headers})
-target_link_libraries(OpNovice ${Geant4_LIBRARIES} )
+target_link_libraries(OpNovice ${Geant4_LIBRARIES} -lstdc++fs ${HDF5_CXX_LIBRARIES})
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we

@@ -28,7 +28,7 @@ using namespace std;
 #include <iostream>
 #include <fstream>
 
-G4int OpNovicePrimaryGeneratorAction::columNum[17] = {7, 11, 13, 15, 15, 17, 17, 17, 17, 17, 17, 17, 15, 15, 13, 11, 7};   // 每一列中对应的光纤数目，从左往右数起
+G4int OpNovicePrimaryGeneratorAction::columNum[19] = {7, 11, 13, 15, 17, 17, 19, 19, 19, 19, 19, 19, 19, 17, 17, 15, 13, 11, 7};   // 每一列中对应的光纤数目，从左往右数起
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 OpNovicePrimaryGeneratorAction::OpNovicePrimaryGeneratorAction():
@@ -305,6 +305,6 @@ G4int OpNovicePrimaryGeneratorAction::GetVolumeID() {
 			return Num;
 		}
 	}
-return Num;  // 防止意外发射。也就是在上面的for循环中没有return Num.
+	return Num;  // 防止意外发射。也就是在上面的for循环中没有return Num.
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -131,7 +131,7 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 	scnt_PS_MPT->AddProperty("FASTCOMPONENT", photonEnergy_water_PS, Scnt_FAST_BCF, NUMENTRIES_PS)->SetSpline(true);
 	scnt_PS_MPT->AddProperty("RINDEX", photonEnergy_water_PS, Scnt_RefractiveIndex_BCF, NUMENTRIES_PS)->SetSpline(true);
 	scnt_PS_MPT->AddProperty("ABSLENGTH", photonEnergy_water_PS, Scnt_AbsorptionLength_BCF, NUMENTRIES_PS)->SetSpline(true);
-	scnt_PS_MPT->AddConstProperty("SCINTILLATIONYIELD",12000./MeV); //8000
+	scnt_PS_MPT->AddConstProperty("SCINTILLATIONYIELD",5000./MeV); //
 	scnt_PS_MPT->AddConstProperty("RESOLUTIONSCALE", 1.0);
 	scnt_PS_MPT->AddConstProperty("FASTTIMECONSTANT", 2.7*ns);
 	scnt_PS_MPT->AddConstProperty("SLOWTIMECONSTANT", 2.7*ns);
@@ -374,7 +374,7 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 
 //---------------------------------------------- 水体部分 ------------------------------------------------//
     const G4int c_colums = 19;   
-    G4int colum[c_colums] = {7, 11, 13, 15, 17, 17, 19, 19, 19, 19, 19, 19, 19, 17, 17, 15, 13, 11, 7} ;  // 每一列中对应的光纤数目，从左往右数起
+    G4int colum[c_colums] = {7, 11, 13, 15, 17, 17, 19, 19, 19, 19, 19, 19, 19, 17, 17, 15, 13, 11, 7};  // 每一列中对应的光纤数目，从左往右数起
     G4int myCount = 0;
 	for(int i=0; i<19; i++) myCount += colum[i];
 	G4cout<<"myCount = "<<myCount<<G4endl;

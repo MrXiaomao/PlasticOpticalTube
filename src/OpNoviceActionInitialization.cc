@@ -37,14 +37,15 @@ OpNoviceActionInitialization::~OpNoviceActionInitialization()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void OpNoviceActionInitialization::BuildForMaster() const {
-  /*
+  
   // 清除历史输出文件
   const char *path = "../OutPut/";
   G4String G4path = path;
   //判断文件夹是否存在，不存在则创建
   if (access(path, 0) == -1){   //如果文件夹不存在
-    // mkdir(G4path,0777);
+    mkdir(G4path,0777);
   }
+  /*
   else{
     // 删除目录中的所有内容
     std::string command = "rm -r " + std::string(path);  // 构造删除命令

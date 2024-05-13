@@ -50,12 +50,14 @@ void OpNoviceRunThread::EndOfRun(){
 
   //转化为cm为单位的数值
   opticalLength /= cm;
-
+  G4int NumberEvent = GetNumberOfEventToBeProcessed();
   // 生成以变参数为后缀的文件名
 	std::ostringstream os;
 	os << "DetectOptical_";
 	os << opticalLength ;
-	os << "cm.h5" ;
+  os << "cm_";
+  os << NumberEvent;
+	os << ".h5" ;
 	G4String fileName = os.str();
   
   // 若存在旧文件，则先删除

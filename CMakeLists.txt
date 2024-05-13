@@ -46,6 +46,8 @@ target_link_libraries(OpNovice ${Geant4_LIBRARIES} -lstdc++fs ${HDF5_CXX_LIBRARI
 #
 set(OpNovice_SCRIPTS
     run.mac
+    detector.mac
+    loop.mac
     optPhoton.mac
     gui.mac
     vis.mac

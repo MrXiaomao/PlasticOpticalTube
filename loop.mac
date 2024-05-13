@@ -1,0 +1,3 @@
+/run/numberOfThreads 10
+
+/control/loop detector.mac iLength 10 40 10

@@ -55,7 +55,7 @@ class OpNoviceDetectorConstruction : public G4VUserDetectorConstruction
     G4String  GetSurfaceName(G4String phycialNameA, G4String phycialNameB);
     G4LogicalVolume*  fScoringVolume;
     G4double fiberGap; 
-    G4double   waterShell_length; 
+    G4double   fwaterShell_length; 
     static const int array = 5;  // 光纤矩阵维度 n*n, 常量数据成员只能在构造函数后的初始化列表中进行初始化
 };
 

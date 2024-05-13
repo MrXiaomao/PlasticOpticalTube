@@ -25,7 +25,7 @@ G4double gPMTCathodePosZ = 10.0*cm;  //初始化
 
 OpNoviceDetectorConstruction::OpNoviceDetectorConstruction(G4double water_length)
 	: fiberGap(1.*mm), 
-	waterShell_length(water_length)
+	fwaterShell_length(water_length)
 	{
 	// default parameter values of the calorimeter
 	// create commands for interactive definition of the calorimeter
@@ -233,7 +233,7 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 		7.00, 6.00, 5.00, 4.00
 	};*/
 
-	assert(sizeof(scintilSlow) == sizeof(photonEnergy_water));
+	// assert(sizeof(scintilSlow) == sizeof(photonEnergy_water));
 
 	G4MaterialPropertiesTable* myMPT1 = new G4MaterialPropertiesTable();
 
@@ -349,8 +349,8 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 //---------------------------------------------- World ------------------------------------------------//
 	// World
 	//
-	G4double   world_xy = 600.0*cm ;//
-	G4double   world_z = 600.0*cm ;//mm
+	G4double   world_xy = 500.0*cm ;//
+	G4double   world_z = 500.0*cm ;//mm
 	G4Box* solidWorld = new G4Box( "World", world_xy, world_xy,world_z);
 	G4LogicalVolume* logicWorld = new G4LogicalVolume( solidWorld, air_mat ,"logicWorld");
 	G4PVPlacement* physWorld =
@@ -361,27 +361,30 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 	//
 	// 水体外壳(容器) ,采用铅作屏蔽，目的在于降低本底信号
 	//
-	G4double   water_radius = 2.8*cm ;                 // 水体的半径 2.8*cm
-	G4double   waterShell_thickness = 1.0*cm ;    // 外壳厚度
+	G4double   water_radius = 2.5*cm ;                 // 水体的半径 2.8*cm
+	G4double   waterShell_thickness = 0.15*cm ;    // 外壳厚度
 	G4double   waterShell_radius = waterShell_thickness + water_radius;    // 外壳半径
-	//~ G4double   waterShell_length   = 40.0*cm ;
+	//~ G4double   fwaterShell_length   = 40.0*cm ;
     G4double   PMMA_thickness = 1.5*cm;
     
-	G4Tubs* solidWaterShell = new G4Tubs("solidWaterShell", water_radius, waterShell_radius, waterShell_length*0.5, 0, 360.0*deg);
+	G4Tubs* solidWaterShell = new G4Tubs("solidWaterShell", water_radius, waterShell_radius, fwaterShell_length*0.5, 0, 360.0*deg);
 	G4LogicalVolume* logicWaterShell = new G4LogicalVolume( solidWaterShell, Pb_mat ,"logicWaterShell");
 	G4PVPlacement* physWaterShell =
 	    new G4PVPlacement( 0, G4ThreeVector( ), logicWaterShell, "physWaterShell", logicWorld, false, 0, true ) ;
 
 //---------------------------------------------- 水体部分 ------------------------------------------------//
-    const G4int c_colums = 17;   
-    G4int colum[c_colums] = {7, 11, 13, 15, 15, 17, 17, 17, 17, 17, 17, 17, 15, 15, 13, 11, 7} ;  // 每一列中对应的光纤数目，从左往右数起
-    
+    const G4int c_colums = 19;   
+    G4int colum[c_colums] = {7, 11, 13, 15, 17, 17, 19, 19, 19, 19, 19, 19, 19, 17, 17, 15, 13, 11, 7} ;  // 每一列中对应的光纤数目，从左往右数起
+    G4int myCount = 0;
+	for(int i=0; i<19; i++) myCount += colum[i];
+	G4cout<<"myCount = "<<myCount<<G4endl;
+	// exit(0);
 	// BCF 含有极少量氚的水，由于含量极少，不影响粒子输运，这里不考虑氚
 	// 当电子能量超过263keV时,在水中就能产生切伦科夫辐射
-	G4double optical_Ridus = 1.0*mm;                               // 光纤半径	1.0*mm
-	G4double optical_Length = PMMA_thickness*2 + waterShell_length;  // 光纤长度
+	G4double optical_Ridus = 0.75*mm; // 光纤半径	0.75*mm
+	G4double optical_Length = PMMA_thickness*2 + fwaterShell_length;  // 光纤长度
     
-	G4Tubs* solidWater = new G4Tubs("solidWater", 0.0, water_radius, waterShell_length*0.5, 0, 360.0*deg);
+	G4Tubs* solidWater = new G4Tubs("solidWater", 0.0, water_radius, fwaterShell_length*0.5, 0, 360.0*deg);
 	G4Tubs* solidoptical = new G4Tubs("solidoptical", 0.0, optical_Ridus, optical_Length*0.5, 0, 360.0*deg);
 	G4SubtractionSolid* pSolidCut(NULL);
 
@@ -389,7 +392,7 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 	G4double fiberDistance = fiberGap + optical_Ridus*2;
 
 	///由于光纤的长度超出了水体，因此水体部分采用布尔逻辑扣除光纤的位置，留下空位放置光纤
-	G4double cell_x = -8.*fiberDistance;  // 第零列坐标位置
+	G4double cell_x = -9.*fiberDistance;  // 第零列坐标位置
 	for(int i=0; i<c_colums; i++) {
         G4int Line = colum[i];
 		G4double cell_y = -(Line-1)*0.5*fiberDistance;  // 第零行坐标位置
@@ -413,8 +416,8 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 //---------------------------Scintillation OpticalFiber without opticalShell----------------------------//
 	G4LogicalVolume* logicOpticaltube = new G4LogicalVolume(solidoptical, polystyrene_mat,"logicOpticaltube");
 
-	G4PVPlacement* physOpticalTube[241]; // 请注意这个参数是由colum[17]中所有元素相加得来的。
-	cell_x = -8.*fiberDistance;          // 第零列坐标位置
+	G4PVPlacement* physOpticalTube[293]; // 请注意这个参数是由colum[17]中所有元素相加得来的。
+	cell_x = -9.*fiberDistance;          // 第零列坐标位置
     G4int tubeID = 0;                    // 摆放时每个物理体编号
 	for(int i=0; i<c_colums; i++) {
         G4int Line = colum[i];
@@ -437,7 +440,7 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 	G4SubtractionSolid* PMMA_SolidCut(NULL);
 	
 	///由于光纤穿过PMMA，因此PMMA部分采用布尔逻辑扣除光纤的位置，留下空位放置光纤
-	cell_x = -8.*fiberDistance;  // 第零列坐标位置
+	cell_x = -9.*fiberDistance;  // 第零列坐标位置
 	for(int i=0; i<c_colums; i++) {
         G4int Line = colum[i];
 		G4double cell_y = -(Line-1)*0.5*fiberDistance;  // 第零行坐标位置
@@ -457,21 +460,21 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 
     G4LogicalVolume* PMMA_log = new G4LogicalVolume(PMMA_SolidCut, PMMA_mat, "PMMA_log");
     
-    G4double PMMA_centerZ = (waterShell_length+PMMA_thickness)*0.5;    // PMMA中心与原点之间的距离
+    G4double PMMA_centerZ = (fwaterShell_length+PMMA_thickness)*0.5;    // PMMA中心与原点之间的距离
 	G4PVPlacement* physPMMA_1 =
 	    new G4PVPlacement(0, G4ThreeVector(0., 0.,  PMMA_centerZ), PMMA_log, "physPMMA_1", logicWorld, false, 0, true ) ;              // Place physPMMA_1
     G4PVPlacement* physPMMA_2 =
 	    new G4PVPlacement(0, G4ThreeVector(0., 0., -PMMA_centerZ), PMMA_log, "physPMMA_2", logicWorld, false, 1, true ) ;            // Place physPMMA_2
     
 //--------------------------------------------si_oil_box -----------------------------------------//
-	G4double pmtRadius = 2.8*cm;
+	G4double pmtRadius = 2.5*cm;
 	G4double si_oilRadius = pmtRadius;
 	G4double si_oil_thickness = 0.05*mm;
 
 	G4Tubs* si_oil_box = new G4Tubs("si_oil_box", 0.0, si_oilRadius, si_oil_thickness*0.5,0.0*deg, 360.0*deg);  // 与PMT的直径相同，长度不同
 	G4LogicalVolume* si_oil_log = new G4LogicalVolume(si_oil_box,silicone_oil_mat,"si_oil_log");
 
-    G4double si_oil_centerZ = (waterShell_length+si_oil_thickness)*0.5+PMMA_thickness;    // si_oil中心与原点之间的距离
+    G4double si_oil_centerZ = (fwaterShell_length+si_oil_thickness)*0.5+PMMA_thickness;    // si_oil中心与原点之间的距离
 	G4VPhysicalVolume* physSil_oil_1 =
 	    new G4PVPlacement(0, G4ThreeVector(0., 0.,  si_oil_centerZ), si_oil_log,"physSil_oil_1",logicWorld,false,0, true);
 	G4VPhysicalVolume* physSil_oil_2 =
@@ -483,7 +486,7 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 	G4Tubs* solidPMTGlass = new G4Tubs("PMTGlass", 0.0, pmtRadius, PMTlenth*0.5,0.0*deg, 360.0*deg);  // PMT的长度不重要，所以这里随便设置
 	G4LogicalVolume* logicPMTGlass =  new G4LogicalVolume(solidPMTGlass, PMT_mat, "logicPMTGlass");
 
-    G4double PMT_centerZ = (waterShell_length+PMTlenth)*0.5+si_oil_thickness+PMMA_thickness;    // si_oil中心与原点之间的距离
+    G4double PMT_centerZ = (fwaterShell_length+PMTlenth)*0.5+si_oil_thickness+PMMA_thickness;    // si_oil中心与原点之间的距离
 	G4PVPlacement* physiPMTGlass1 =
 	    new G4PVPlacement(0, G4ThreeVector(0., 0.,  PMT_centerZ), logicPMTGlass, "physiPMTGlass1", logicWorld, false, 0, true ) ;
 	G4PVPlacement* physiPMTGlass2 =

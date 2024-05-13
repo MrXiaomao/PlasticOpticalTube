@@ -1,5 +1,6 @@
 
 #include "OpNoviceDetectorConstruction.hh"
+#include "DetectorMessenger.hh"
 
 #include "G4NistManager.hh"
 #include "G4Material.hh"
@@ -23,19 +24,18 @@
 G4double gPMTCathodePosZ = 10.0*cm;  //初始化
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-OpNoviceDetectorConstruction::OpNoviceDetectorConstruction(G4double water_length)
-	: fiberGap(1.*mm), 
-	fwaterShell_length(water_length)
-	{
+OpNoviceDetectorConstruction::OpNoviceDetectorConstruction()
+	: fiberGap(1.*mm),fwaterShell_length(20.*cm)
+{
 	// default parameter values of the calorimeter
 	// create commands for interactive definition of the calorimeter
-	//detectorMessenger = new CsITlDetectorMessenger(this);
+	fDetectorMessenger = new DetectorMessenger(this);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 OpNoviceDetectorConstruction::~OpNoviceDetectorConstruction() {
-//delete detectorMessenger;
+	delete fDetectorMessenger;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -44,12 +44,12 @@ OpNoviceDetectorConstruction::~OpNoviceDetectorConstruction() {
 
 G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 	G4NistManager* nist = G4NistManager::Instance();
-
+	G4cout<<"xiaomaoDetector Length = "<<fwaterShell_length/cm<<"cm"<<G4endl;
 	///////////////////////////////Element//////////////////////////////
 	G4Element* el_H = new G4Element("Hydro","H" , 1., 1.01*g/mole);
 	G4Element* el_C = new G4Element("Carbon","C" , 6., 12.011*g/mole);
 	G4Element* el_O = new G4Element("Oxy","O" , 8., 15.999*g/mole);
-    G4Element* el_Si=new G4Element("Silicon", "Si", 14.,  28.0855*g/mole);
+    G4Element* el_Si = new G4Element("Silicon", "Si", 14.,  28.0855*g/mole);
     
 	///////////////////////////////Material//////////////////////////////
 	// Air
@@ -81,7 +81,7 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 	PMMA_mat->AddElement(el_C, 0.599848);
 	
 	//silicone oil
-	G4Material* silicone_oil_mat=new G4Material("silicone_oil", 0.963*g/cm3, 4);
+	G4Material* silicone_oil_mat = new G4Material("silicone_oil", 0.963*g/cm3, 4);
 	silicone_oil_mat->AddElement(el_C, 2);
 	silicone_oil_mat->AddElement(el_H, 6);
 	silicone_oil_mat->AddElement(el_Si, 1);
@@ -337,7 +337,6 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
 	G4double   water_radius = 2.5*cm ;                 // 水体的半径 2.8*cm
 	G4double   waterShell_thickness = 0.15*cm ;    // 外壳厚度
 	G4double   waterShell_radius = waterShell_thickness + water_radius;    // 外壳半径
-	//~ G4double   fwaterShell_length   = 40.0*cm ;
     G4double   PMMA_thickness = 1.5*cm;
     
 	G4Tubs* solidWaterShell = new G4Tubs("solidWaterShell", water_radius, waterShell_radius, fwaterShell_length*0.5, 0, 360.0*deg);
@@ -350,7 +349,7 @@ G4VPhysicalVolume* OpNoviceDetectorConstruction::Construct() {
     G4int colum[c_colums] = {7, 11, 13, 15, 17, 17, 19, 19, 19, 19, 19, 19, 19, 17, 17, 15, 13, 11, 7};  // 每一列中对应的光纤数目，从左往右数起
     G4int myCount = 0;
 	for(int i=0; i<19; i++) myCount += colum[i];
-	G4cout<<"myCount = "<<myCount<<G4endl;
+	G4cout<<"The number of opticalTube is "<<myCount<<G4endl;
 	// exit(0);
 	// BCF 含有极少量氚的水，由于含量极少，不影响粒子输运，这里不考虑氚
 	// 当电子能量超过263keV时,在水中就能产生切伦科夫辐射
@@ -661,4 +660,10 @@ G4String OpNoviceDetectorConstruction::GetSurfaceName(G4String phycialNameA, G4S
 	G4String name = os.str();
 	return name;
 }
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void OpNoviceDetectorConstruction::SetDetectorLength(G4double value)
+{
+  fwaterShell_length = value;
+  G4RunManager::GetRunManager()->ReinitializeGeometry();
+}

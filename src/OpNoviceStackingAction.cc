@@ -13,8 +13,8 @@
 #include "G4EventManager.hh"
 #include "G4Event.hh"
 
-#include "G4AutoLock.hh"  // 文件锁，防止访问文件异常
-namespace { G4Mutex productiontex = G4MUTEX_INITIALIZER; }
+// #include "G4AutoLock.hh"  // 文件锁，防止访问文件异常
+// namespace { G4Mutex productiontex = G4MUTEX_INITIALIZER; }
 
 #include "G4ios.hh"
 #include <fstream>

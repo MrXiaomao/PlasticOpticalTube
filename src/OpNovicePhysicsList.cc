@@ -405,7 +405,6 @@ void OpNovicePhysicsList::ConstructNeutron()
 void OpNovicePhysicsList::SetVerbose(G4int verbose)
 {
   fVerboseLevel = verbose;
-  G4cout<<"xiaomao = "<<fVerboseLevel<<G4endl;
   fCerenkovProcess->SetVerboseLevel(fVerboseLevel);
   fScintillationProcess->SetVerboseLevel(fVerboseLevel);
   fAbsorptionProcess->SetVerboseLevel(fVerboseLevel);

@@ -1,0 +1,12 @@
+
+/Detector/length {iLength} cm
+
+/run/initialize
+
+/control/verbose 0
+/tracking/verbose 0
+
+/OpNovice/phys/verbose 0
+#
+#/run/printProgress 1000
+/run/beamOn 500

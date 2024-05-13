@@ -3,6 +3,8 @@
 //
 #include "OpNoviceRunThread.hh"
 #include "Hdf5Function.h"
+#include "OpNoviceDetectorConstruction.hh"
+#include "G4RunManager.hh"
 
 OpNoviceRunThread::OpNoviceRunThread()
 	: G4Run(),
@@ -34,6 +36,39 @@ void OpNoviceRunThread::Merge(const G4Run* run) {
 }
 
 void OpNoviceRunThread::EndOfRun(){
+  // 获取模拟中的变参数
+  G4double opticalLength = 20*cm;
+  const OpNoviceDetectorConstruction* detectorConstruction
+    = static_cast<const OpNoviceDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+  if(detectorConstruction) {
+    opticalLength = detectorConstruction->GetDetectorLength();
+  }
+  else{
+    G4cout<<"无法找到水体长度"<<G4endl;
+    return;
+  }
+
+  //转化为cm为单位的数值
+  opticalLength /= cm;
+
+  // 生成以变参数为后缀的文件名
+	std::ostringstream os;
+	os << "DetectOptical_";
+	os << opticalLength ;
+	os << "cm.h5" ;
+	G4String fileName = os.str();
+  
+  // 若存在旧文件，则先删除
+  G4String outPutPath = "../OutPut/";
+  G4String wholepath = outPutPath + fileName;
+  // const char* file_path = "example.txt"; // 指定文件路径
+  if (remove(wholepath) != 0) { // 尝试删除文件
+    G4cout << wholepath <<" is not exist." << G4endl;
+  } else {
+    G4cout << wholepath <<" is deleted successfully." << G4endl;
+  }
+
+  //切割数据
   int size = ftotalCounts.size();
   if(size>0){
     vector<G4double> EnDep;
@@ -51,12 +86,12 @@ void OpNoviceRunThread::EndOfRun(){
       i++;
     }
 
-    G4cout<<"TimeEdep size = "<<size<<G4endl;
-    
+    G4cout<<"Counter size = "<<size<<G4endl;
+
     // 写入到HDF5文件中
     Hdf5WriteValue write;
-    // G4String outPutPath = "../OutPut/";
-    write.CreateNewFile("../OutPut/DetectOptical.h5");
+    write.CreateNewFile(wholepath);
+    // write.CreateNewFile("../OutPut/DetectOptical.h5");
     write.CreateGroup("Data");
     write.CreateDataspace(1, 1, size);
     write.CreateDoubleDataset("EventEdep");

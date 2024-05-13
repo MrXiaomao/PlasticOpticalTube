@@ -34,6 +34,7 @@
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
 
+class DetectorMessenger;
 class G4VPhysicalVolume;
 class G4LogicalVolume;
 extern G4double gPMTCathodePosZ ;
@@ -42,21 +43,25 @@ extern G4double gPMTCathodePosZ ;
 class OpNoviceDetectorConstruction : public G4VUserDetectorConstruction
 {
   public:
-    OpNoviceDetectorConstruction(G4double water_length);
+    OpNoviceDetectorConstruction();
     virtual ~OpNoviceDetectorConstruction();
 
     virtual G4VPhysicalVolume* Construct();
     G4LogicalVolume* GetScoringVolume() const { return fScoringVolume; }
     G4double GetOpticalDistance() const { return  fiberGap;}
     
+    //设置探测器水体长度（注意光纤比水体更长）
+    void SetDetectorLength(G4double);
+    inline G4double GetDetectorLength() const {return fwaterShell_length;}
+
   protected:
     G4String  GetphyOpticalShellName(G4int i, G4int j); 
     G4String  GetphyOpticaltubeName(G4int i, G4int j); 
     G4String  GetSurfaceName(G4String phycialNameA, G4String phycialNameB);
     G4LogicalVolume*  fScoringVolume;
     G4double fiberGap; 
-    G4double   fwaterShell_length; 
-    static const int array = 5;  // 光纤矩阵维度 n*n, 常量数据成员只能在构造函数后的初始化列表中进行初始化
+    G4double fwaterShell_length; 
+    DetectorMessenger* fDetectorMessenger = nullptr;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

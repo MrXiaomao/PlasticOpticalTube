@@ -37,7 +37,8 @@ OpNoviceActionInitialization::~OpNoviceActionInitialization()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void OpNoviceActionInitialization::BuildForMaster() const {
-	  // 清除历史输出文件
+  /*
+  // 清除历史输出文件
   const char *path = "../OutPut/";
   G4String G4path = path;
   //判断文件夹是否存在，不存在则创建
@@ -55,6 +56,7 @@ void OpNoviceActionInitialization::BuildForMaster() const {
     }
   }
   mkdir(G4path,0777);
+  */
 
 	SetUserAction(new OpNoviceRunAction());
 }
